@@ -67,22 +67,21 @@ def feedback(sys1,sys2):
 
 def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_params=False,only_params=False,text_params=False,**kwargs):
     '''
-    sys es control.tf() o sicpy.signal.lti
-    
-    
-    cs:cifras significativas.
-    
     *args: [sys,{X0:X0,
                     c:color,
                     lw:linewidth,
                     label:label}]
-                    
+
+    sys es control.tf() o sicpy.signal.lti
+                  
                     
     X0: Estado inicial del sistema
 
     T:[ti,tf,n] Vector de tiempo (lista,ti:tiempo inicial,tf:tiempo final,n:numero de puntos).
 
     N: Numero de puntos de T (en caso no se de T).
+    
+    cs:cifras significativas.
     
     **kwargs:title,xlabel,ylabel,loc
     
@@ -108,7 +107,6 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_pa
     prms=['tp','ts','vp','mp','tl','vs']
     c=['b','r','g','c','m','y']
     labels=[]
-    keys=['X0','lw','label','c']
     SYS=[]#lista de funciones de transferencia
     ARG=[]#lista de argumentos para las graficas
     Tx=[]
