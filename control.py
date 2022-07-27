@@ -50,12 +50,24 @@ def feedback(sys1,sys2):
     sys2:Funcion de transferencia de realimentacion negativa
     '''
     num=np.convolve(sys1.num,sys2.den)
-    den=np.convolve(sys1.num,sys2.num)+np.convolve(sys1.den,sys2.den)
+    den1=np.convolve(sys1.num,sys2.num)
+    den2=np.convolve(sys1.den,sys2.den)
+    n=len(den1)
+    m=len(den2)
+    
+    if n>m:
+        den2=np.append(den2[::-1],np.zeros(n-m))[::-1]
+        
+    if m>n:
+        den1=np.append(den1[::-1],np.zeros(m-n))[::-1]
+        
+    den=den1+den2
+    
     return lti(num,den)
 
 def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_params=False,only_params=False,text_params=False,**kwargs):
     '''
-    sys es control.tf()
+    sys es control.tf() o sicpy.signal.lti
     
     
     cs:cifras significativas.
@@ -72,8 +84,13 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_pa
 
     N: Numero de puntos de T (en caso no se de T).
     
+    **kwargs:title,xlabel,ylabel,loc
+    
     '''
     #=====================Inicializacion de vaiables=======
+    if only_params:
+        text_params=True
+        
     args_plot={'title':'Respuesta al escalon unitario','xlabel':'Tiempo(S)','ylabel':'Magnitud','loc':'best'}
     for key,value in kwargs.items():
         if key in args_plot.keys():
