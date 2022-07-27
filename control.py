@@ -45,7 +45,7 @@ def serie(sys1,sys2):
 def feedback(sys1,sys2):
     '''
     Para tf con retroalimentacion negativa
-    sys1 y sys2 son scipy.signal.lti
+    sys1 y sys2 son control.tf o scipy.signal.lti
     sys1: Funcion de transferencia de camino directo
     sys2:Funcion de transferencia de realimentacion negativa
     '''
@@ -65,7 +65,7 @@ def feedback(sys1,sys2):
     
     return lti(num,den)
 
-def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_params=False,only_params=False,text_params=False,**kwargs):
+def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_params=False,text_params=False,**kwargs):
     '''
     *args: [sys,{X0:X0,
                     c:color,
@@ -75,7 +75,7 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_pa
     sys es control.tf() o sicpy.signal.lti
                   
                     
-    X0: Estado inicial del sistema
+    X0: Estado inicial del sistema.
 
     T:[ti,tf,n] Vector de tiempo (lista,ti:tiempo inicial,tf:tiempo final,n:numero de puntos).
 
@@ -83,15 +83,30 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',plot_params=False,legend_pa
     
     cs:cifras significativas.
     
+    params: str, define que parametros se analizaran (solo se pueden plotear 'tp,ts,vp,vs') {
+        'all': todos los parametros('tp,ts,vp,mp,tl,vs')
+        'tp,vs': tiempo pico mas valor estable
+        'tp,ts':tiempo pico mas tiempo de establecimiento
+        ...
+        'tp,ts,vp,':tiempo pico mas tiempo de establecimiento mas valor pico
+    }
+
+    legend_params: Bool, define si se añale los parametros a una legenda, default False.
+    
+    text_params: Bool, define si se muestra los parametros como texto, default False.
+
+    only_params: Bool, define si solo se muesta los parametros en formato de texto. Default False
+    
     **kwargs:title,xlabel,ylabel,loc
     
     '''
+
     #=====================Inicializacion de vaiables=======
     if only_params:
         text_params=True
         
     args_plot={'title':'Respuesta al escalon unitario','xlabel':'Tiempo(S)','ylabel':'Magnitud','loc':'best'}
-    for key,value in kwargs.items():
+    for key,_ in kwargs.items():
         if key in args_plot.keys():
             args_plot[key]=kwargs[key]
         else:
