@@ -65,7 +65,7 @@ def feedback(sys1,sys2):
     
     return lti(num,den)
 
-def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_params=False,text_params=False,**kwargs):
+def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_params=False,text_params=False,anotation=False,**kwargs):
     '''
     *args: [sys,{X0:X0,
                     c:color,
@@ -98,6 +98,9 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_pa
     only_params: Bool, define si solo se muesta los parametros en formato de texto. Default False
     
     **kwargs:title,xlabel,ylabel,loc
+    >>loc:
+    'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right', 'center left', 
+    'center right', 'lower center', 'upper center', 'center'
     
     '''
 
@@ -196,7 +199,7 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_pa
         t_r.reverse()
         y_r.reverse()
         if text_params:
-            print(f"=========== Parametros de {labels[i]} ===============")
+            print(f"=========== PARAMETROS DE {ARG[i]['label']} ===============")
             
         if 'tp' in list_params:
             tp=round(t[list(y).index(y.max())],cs)#tiempo pico
@@ -277,8 +280,11 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_pa
         
         
     if not only_params:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
         for i in range(len(SYS)):
-            plt.plot(Tx[i],Yx[i],ARG[i]['c'],label=ARG[i]['label'],linewidth=ARG[i]['lw'])
+            line, = ax.plot(Tx[i],Yx[i],ARG[i]['c'],label=ARG[i]['label'],linewidth=ARG[i]['lw'])
 
             if legend_params:
                 legends=[]
@@ -303,12 +309,20 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_pa
             
             if 'vs' in list_params:
                 plt.plot([Tx[i][0],Tx[i][-1]],[Vs[i]]*2,'grey',linestyle='dotted')
+                if anotation:
+                    ax.annotate(f'{Vs[i]}', xy=(0.2,Vs[i]))
             if 'vp' in list_params:
                 plt.plot([Tx[i][0],Tp[i]],[Vp[i]]*2,'-.',label=legends[0])
+                if anotation:
+                    ax.annotate(f'{Vp[i]}', xy=(Tp[i],Vp[i]))
             if 'tp' in list_params:
                 plt.plot([Tp[i]]*2,[Yx[i][0],Yx[i].max()],'-.',label=legends[1])
+                if anotation:
+                    ax.annotate(f'{Tp[i]}', xy=(Tp[i],0.2))
             if 'ts' in list_params:
                 plt.plot([Ts[i]]*2,[Yx[i][0],Yx[i][-1]],'-.',label=legends[2])
+                if anotation:
+                    ax.annotate(f'{Ts[i]}', xy=(Ts[i],0.2))
         
         plt.plot([Tx[0][0],Tx[i][-1]],[1]*2,'k',label='Setpoint')
         plt.title(args_plot['title'])
@@ -316,3 +330,31 @@ def plot_step(*args, T=None, N=None,cs=3,params='vs',legend_params=False,only_pa
         plt.ylabel(args_plot['ylabel'])
         plt.legend(loc=args_plot['loc'])
         plt.show()
+
+        
+def PI(sys,m,ts):
+    '''
+    sys=tf
+    m=sobre impulso en decimal.
+    ts: tiempo de establecimiento.
+    '''
+    z=1/np.sqrt(1+(np.pi/np.log(m))**2)
+    w=4/(z*ts)
+    N=sys.num
+    D=sys.den
+
+    s1=complex(-w*z,w*np.sqrt(1-z**2))
+    s2=complex(-w*z,-w*np.sqrt(1-z**2))
+
+    D1=np.polyval(D,s1)
+    D2=np.polyval(D,s2)
+    N1=np.polyval(N,s1)
+    N2=np.polyval(N,s2)
+
+    kp=(s2*D2*N1-s1*D1*N2)/((s1-s2)*N1*N2)
+    ki=-kp*s1-D1*s1/N1
+    kp=kp.real
+    ki=ki.real
+    Gdir=serie(sys,tf([kp,ki],[1,0]))
+    G=feedback(Gdir,tf(1,1))
+    return G
