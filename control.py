@@ -358,3 +358,38 @@ def PI(sys,m,ts):
     Gdir=serie(sys,tf([kp,ki],[1,0]))
     G=feedback(Gdir,tf(1,1))
     return G
+
+
+def LGR(sys,xlim=None,ylim=None,fc='cyan',grid=False,anotation=True):
+    real=[]
+    imag=[]
+    p=sys.poles
+    z=sys.zeros
+    k=np.linspace(0.01,50,1000)
+    fig = plt.figure(facecolor=fc)
+    ax = fig.add_subplot(111)
+    for i in k:
+        ser=serie(sys,lti([i],[1]))
+        fed=feedback(ser,lti([1],[1]))
+        ps=fed.poles
+        real.append(ps.real)
+        imag.append(ps.imag)
+    ax.plot(real,imag,linewidth=2)
+    ax.plot(p.real,p.imag,c='red',marker='x',ms=10,ls='',linewidth=5)# graficamos los polos en lazo directo
+    ax.plot(z.real,z.imag,c='blue',marker='o',ms=10,ls='',linewidth=5)#graficamos los ceros en lazo directo
+    if anotation:
+        for i in p:
+            ax.annotate(f'{np.round(i,3)}', xy=(i.real+0.02,i.imag+0.02))
+
+        for j in z:
+            ax.annotate(f'{np.round(j,3)}', xy=(j.real+0.02,j.imag+0.02))
+    
+    plt.title('LGR')
+    plt.xlabel('Real')
+    plt.ylabel('Imag')
+    plt.grid(grid)
+    if not xlim is None:
+        plt.xlim(xlim)
+    if not ylim is None:
+        plt.ylim(ylim)
+    plt.show()
