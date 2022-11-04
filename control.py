@@ -369,8 +369,8 @@ def LGR(sys,xlim=None,ylim=None,fc='cyan',grid=False,anotation=True):
     fig = plt.figure(facecolor=fc)
     ax = fig.add_subplot(111)
     for i in k:
-        ser=serie(sys,lti([i],[1]))
-        fed=feedback(ser,lti([1],[1]))
+        ser=serie(sys,tf([i],[1]))
+        fed=feedback(ser,tf([1],[1]))
         ps=fed.poles
         real.append(ps.real)
         imag.append(ps.imag)
