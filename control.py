@@ -365,7 +365,7 @@ def LGR(sys,xlim=None,ylim=None,fc='cyan',grid=False,anotation=True):
     imag=[]
     p=sys.poles
     z=sys.zeros
-    k=np.linspace(0.01,50,1000)
+    k=np.linspace(0.01,300,3000)
     fig = plt.figure(facecolor=fc)
     ax = fig.add_subplot(111)
     for i in k:
