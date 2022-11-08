@@ -1,4 +1,4 @@
-from scipy.signal import lti
+from scipy.signal import lti,bode
 import numpy as np
 import matplotlib.pyplot as plt
 #==================Comentarios=========
@@ -393,3 +393,20 @@ def LGR(sys,xlim=None,ylim=None,fc='cyan',grid=False,anotation=True):
     if not ylim is None:
         plt.ylim(ylim)
     plt.show()
+
+def Bode(sys,ax=None,):
+    w,mag,fase=bode(sys)
+    if ax is None:
+        fig,ax=plt.subplots(2,1)
+
+    ax[0].semilogx(w,mag)
+    ax[1].semilogx(w,fase)
+    ax[0].grid(True)
+    ax[1].grid(True)
+    ax[0].set_xlabel('Frecuencia')
+    ax[1].set_xlabel('Frecuencia')
+    ax[0].set_ylabel('Magnitud (db)')
+    ax[1].set_ylabel('Fase')
+    plt.show()
+
+
